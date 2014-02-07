@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gem 'sinatra'
-gem 'unicorn'
 gem 'json'
-
-
-
+gem 'data_mapper'
+gem 'dm-sqlite-adapter'
+gem 'shotgun'
+gem 'dm-types'
