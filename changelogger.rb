@@ -8,7 +8,7 @@ DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/developme
 class Changelog
   include DataMapper::Resource
   property :id, Serial 
-  property :log, Json
+  property :log, Text
   property :created_at, DateTime
 
   def url
@@ -19,13 +19,13 @@ end
 DataMapper.finalize
 DataMapper.auto_upgrade!
 
-set :json_encoder, :to_json
-
-get '/' do
-  redirect to('/events')
-end
+#get '/' do
+#  redirect to('/events')
+#end
 
 get '/events' do
+  "hello"
+  p request.body
   content_type :json
   @events = Changelog.all(:order => :created_at.desc)
   @events.to_json
@@ -44,22 +44,9 @@ end
 # dm-types claims it can load/dump but failures occur.
 # dm-types http://datamapper.org/docs/dm_more/types.html
 
-post '/changelogger' do
-  # params[:log] will be null since json isn't available in params
-  changelogger = Changelog.new(params[:log])
-  if changelogger.save
-    status 201
-    response['Location'] = changelogger.url
-  else
-    status 422
-    changelogger.errors.values.join
-  end
-end
-
-# Will transform json into hash -- {"log"=>"service"}:Hash
-# How do I save this hash into data_mapper. I've tried adding the dm-types 'Json' property to the log field but wont accept the hash.
 # post '/changelogger' do
-#   changelogger = JSON.parse(request.body.read)
+#   # params[:log] will be null since json isn't available in params
+#   changelogger = Changelog.new(params[:log])
 #   if changelogger.save
 #     status 201
 #     response['Location'] = changelogger.url
@@ -68,6 +55,28 @@ end
 #     changelogger.errors.values.join
 #   end
 # end
+
+# Will transform json into hash -- {"log"=>"service"}:Hash
+# How do I save this hash into data_mapper. I've tried adding the dm-types 'Json' property to the log field but wont accept the hash.
+
+before do
+  if request.request_method == "POST"
+    body_parameters = request.body.read
+    params.merge!(JSON.parse(body_parameters))
+  end
+end
+
+post '/changelogger' do
+  content_type :json
+  changelogger = Changelog.new(params)
+  if changelogger.save
+    status 201
+    response['Location'] = changelogger.url
+  else
+    status 422
+    changelogger.errors.values.join
+  end
+end
  
 # Example of POST 
 #post '/changelogger' do
