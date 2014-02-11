@@ -9,13 +9,6 @@ class ChangeLogger < Sinatra::Base
   # http://sequel.jeremyevans.net/rdoc-plugins/files/lib/sequel/extensions/pg_json_rb.html
   DB.extension :pg_array, :pg_json
 
-  # Need to figure out where this is suppossed to live. 
-  DB.create_table :changelogger do
-    primary_key :id
-    String :service
-    Json :log
-  end
-
   get '/' do
     "Welcome to ChangeLogger!"
   end
@@ -25,11 +18,11 @@ class ChangeLogger < Sinatra::Base
     request.body.rewind
     data = JSON.parse(request.body.read)
 
-    # Returns a object of Sequel::Postgres::JSONHash
-    # x = Sequel.pg_json(data)
-    # "#{x.class}"
-    
-    status 200 if DB[:changelogger].insert(:log => Sequel.pg_json(data))
+    begin
+      status 200 if DB[:changelogger].insert(:created_at => Time.now, :log => Sequel.pg_json(data))
+    rescue Sequel::Error => e
+      halt(500, e)
+    end
   end
 
   # returns all events
