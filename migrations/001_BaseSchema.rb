@@ -4,6 +4,8 @@ Sequel.migration do
       primary_key :id
       DateTime :created_at
       Json :log
+      # TODO: We need to figure out how to add an index to the Json type
+      # index :log # This doesn't work 
     end
   end
 

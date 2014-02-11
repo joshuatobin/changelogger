@@ -25,9 +25,24 @@ class ChangeLogger < Sinatra::Base
     end
   end
 
-  # returns all events
+  # TODO: Need to add some search funtionality to be able to search on the json types
+  post '/search' do
+  end
+
+  # TODO: Returns the class object rather than the result. 
+  # returns the last 60 days of changelogger events
   get '/events' do
+    e = DB[:changelogger].order(:id).limit(60)
+  end
+
+  # returns all changelogger events
+  get '/events/all' do
     "#{DB[:changelogger].all}"
+  end
+
+  # returns the last changelogger events
+  get '/last' do
+    "#{DB[:changelogger].order(:id).last}"
   end
 end
 
