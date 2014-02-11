@@ -1,2 +1,2 @@
 require './changelogger'
-run Sinatra::Application
+run ChangeLogger

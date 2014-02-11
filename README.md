@@ -1,8 +1,10 @@
 ## Overview
-
 A ruby API endpoint to recieve json formatted changelogs to store for 60 Days.
 
-## Instll
-bundle install
-
+## Dev setup
+If you're developing on a mac you'll need to first setup postgress
+* Install postgress from http://postgresapp.com
+* brew update 
+* brew install postgresql # The pg gem won't install without 
+* bundle install
 

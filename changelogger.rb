@@ -1,64 +1,44 @@
-require 'sinatra'
+require 'sinatra/base'
 require 'json'
-require 'data_mapper'
-require 'dm-types'
-require 'sinatra/json'
+require 'sequel'
 
-DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqlite")
+class ChangeLogger < Sinatra::Base
+  DB = Sequel.connect(ENV['DATABASE_URL'] || 'postgres://localhost/changelogger')
 
-class Changelog
-  include DataMapper::Resource
-  property :id, Serial 
-  property :log, Text
-  property :created_at, DateTime
+  # Support for PostgreSQL Json type 
+  # http://sequel.jeremyevans.net/rdoc-plugins/files/lib/sequel/extensions/pg_json_rb.html
+  DB.extension :pg_array, :pg_json
 
-  def url
-    "changelogger/#{id}"
+  # Need to figure out where this is suppossed to live. 
+  DB.create_table :changelogger do
+    primary_key :id
+    String :service
+    Json :log
+  end
+
+  get '/' do
+    "Welcome to ChangeLogger!"
+  end
+
+  post '/changelogger' do
+    # We need to use rewind here or weird things happen when parsing the json
+    request.body.rewind
+    data = JSON.parse(request.body.read)
+
+    # Returns a object of Sequel::Postgres::JSONHash
+    # x = Sequel.pg_json(data)
+    # "#{x.class}"
+    
+    status 200 if DB[:changelogger].insert(:log => Sequel.pg_json(data))
+  end
+
+  # returns all events
+  get '/events' do
+    "#{DB[:changelogger].all}"
   end
 end
 
-DataMapper.finalize
-DataMapper.auto_upgrade!
 
-post '/test' do
-  request.body.rewind
-  data = JSON.parse(request.body.read)
-  @log = Changelog.new(data)
-  @log.save
-end
-
-get '/events' do
-  "hello"
-  p request.body
-  content_type :json
-  @events = Changelog.all(:order => :created_at.desc)
-  @events.to_json
-end
-
-before do
-  if request.request_method == "POST"
-    body_parameters = request.body.read
-    params.merge!(JSON.parse(body_parameters))
-  end
-end
-
-post '/changelogger' do
-  changelogger = Changelog.new(params)
-  if changelogger.save
-    status 201
-    response['Location'] = changelogger.url
-  else
-    status 422
-    changelogger.errors.values.join
-  end
-end
- 
-# Example of POST 
-#post '/changelogger' do
-#  content_type :json
-#  log = JSON.parse(request.body.read)
-#  log.to_json
-#end
 
 
 
