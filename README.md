@@ -7,20 +7,25 @@ If you're developing on a mac you'll need to first setup postgress
 
 * Install postgress from http://postgresapp.com
 
-```brew update
+```bash
+brew update
 ```
 
-```brew install postgresql # The pg gem won't install without
+```bash 
+brew install postgresql # The pg gem won't install without
 ```
 
-```bundle install
+```bash
+bundle install
 ```
 
 #### Setup the changelogger database
-```psql
+```bash
+psql
 ```
 
-```create database changelogger
+```bash
+create database changelogger
 ```
 
 
