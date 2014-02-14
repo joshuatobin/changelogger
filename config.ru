@@ -1,2 +1,2 @@
-require './changelogger'
+require './lib/changelogger'
 run ChangeLogger

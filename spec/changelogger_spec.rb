@@ -1,7 +1,5 @@
 require File.expand_path '../helper_spec.rb', __FILE__
-
-#require_relative '../helper_spec.rb'
-require_relative '../changelogger.rb'
+require 'changelogger'
 
 include Rack::Test::Methods
 
