@@ -3,6 +3,11 @@ require 'json'
 require 'sequel'
 
 class ChangeLogger < Sinatra::Base
+
+  before do
+    content_type 'application/json'
+  end
+
   DB = Sequel.connect(ENV['DATABASE_URL'] || 'postgres://localhost/changelogger')
 
   # Support for PostgreSQL Json type 
@@ -14,6 +19,7 @@ class ChangeLogger < Sinatra::Base
   end
 
   post '/changelogger' do
+    content_type :json
     # We need to use rewind here or weird things happen when parsing the json
     request.body.rewind
     data = JSON.parse(request.body.read)
@@ -32,7 +38,8 @@ class ChangeLogger < Sinatra::Base
   # TODO: Returns the class object rather than the result. 
   # returns the last 60 days of changelogger events
   get '/events' do
-    e = DB[:changelogger].order(:id).limit(60)
+    e = DB[:changelogger].order(:id)
+    "#{e.limit(60)}"
   end
 
   # returns all changelogger events
@@ -40,8 +47,8 @@ class ChangeLogger < Sinatra::Base
     "#{DB[:changelogger].all}"
   end
 
-  # returns the last changelogger events
-  get '/last' do
+  # returns the last changelogger event
+  get '/events/last' do
     "#{DB[:changelogger].order(:id).last}"
   end
 end

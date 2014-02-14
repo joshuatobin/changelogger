@@ -21,21 +21,55 @@ $ bundle install
 
 #### Setup the changelogger database
 
-Using the psql CLI create the changelogger database
-
 ```bash
-$ psql
+$ rake create_db
 ```
 
-```bash
-$ create database changelogger
-```
-
-Execute the Rakefile command to setup the DB schema
+#### Execute the Rakefile command to setup the DB schema
 
 ```bash
 $ rake db:migrate
 ```
 
+#### Using foreman 
 
+```bash
+$ foreman start
+```
+
+#### API Examples
+
+Send a new event to changelogger
+```bash
+$ curl -i -X POST -H "Accept: application/json" -H "Content-type: application/json" -d '{"service": {"mass": "nagios alert!"}}' localhost:5000/changelogger
+```
+
+Get all changelogger events
+```bash
+$ curl -i -X GET http://localhost:5000/events/all
+```
+
+Get the last changelogger event
+```bash
+$ curl -i -X GET http://localhost:5000/events/last
+```
+
+#### Tests
+
+Setup the test db
+
+```bash
+$ rake create_test_db
+```
+
+Run the tests
+
+```bash
+$ rake test
+```
+
+#### TODO
+* Add API method for search
+* Get a working /events method for returning events for a specific time period
+* Get specs/minitest instantiating a changelogger-test database at the beginning of rake test and dropping at the end.
 
