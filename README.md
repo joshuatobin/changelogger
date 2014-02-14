@@ -71,5 +71,5 @@ $ rake test
 #### TODO
 * Add API method for search
 * Get a working /events method for returning events for a specific time period
-* Get specs/minitest instantiating a changelogger-test database at the beginning of rake test and dropping at the end.
+
 

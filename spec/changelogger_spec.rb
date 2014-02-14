@@ -26,6 +26,7 @@ describe "ChangeLogger" do
     assert_equal(200, last_response.status)
     assert_equal('application/json;charset=utf-8',
                  last_response.content_type)
+    assert last_response.body.include?('baz')
   end
 
 end

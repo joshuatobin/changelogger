@@ -23,6 +23,8 @@ task :drop_test_db do
   sh 'dropdb changelogger-test || true'
 end
 
+task all: [:create_test_db, :test]
+
 namespace :db do
   require "sequel"
   Sequel.extension :migration
